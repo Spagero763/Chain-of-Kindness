@@ -21,7 +21,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Send, CheckCircle } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}`;
 
@@ -33,6 +33,11 @@ const formSchema = z.object({
 export default function GiveHelpForm() {
   const { isConnected } = useAccount();
   const { toast } = useToast();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -42,18 +47,18 @@ export default function GiveHelpForm() {
     },
   });
 
-  const { data: hash, write: giveHelp, isLoading: isPending, error } = useContractWrite({
+  const { data, write, error: writeError, isLoading: isPending } = useContractWrite({
     address: contractAddress,
     abi,
     functionName: 'giveHelp',
   });
 
-  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransaction({ 
-    hash, 
+  const { isLoading: isConfirming, isSuccess: isConfirmed, error: receiptError } = useWaitForTransaction({ 
+    hash: data?.hash,
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    giveHelp({
+    write({
       args: [values.recipient, values.message],
     });
   }
@@ -68,16 +73,18 @@ export default function GiveHelpForm() {
       });
       form.reset();
     }
+    const error = writeError || receiptError;
     if (error) {
       toast({
         title: "Transaction Error",
-        description: error.shortMessage || "An unknown error occurred.",
+        description: (error as any).shortMessage || "An unknown error occurred.",
         variant: 'destructive'
       });
     }
-  }, [isConfirmed, error, toast, form]);
+  }, [isConfirmed, writeError, receiptError, toast, form]);
 
   const isLoading = isPending || isConfirming;
+  const showConnectMessage = isClient && !isConnected;
 
   return (
     <Card className="w-full shadow-lg">
@@ -123,7 +130,7 @@ export default function GiveHelpForm() {
             />
           </CardContent>
           <CardFooter>
-            <Button type="submit" disabled={!isConnected || isLoading} className="w-full">
+            <Button type="submit" disabled={!isClient || !isConnected || isLoading} className="w-full">
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isConfirming && 'Confirming Transaction...'}
               {isPending && !isConfirming && 'Waiting for signature...'}
@@ -137,7 +144,7 @@ export default function GiveHelpForm() {
           </CardFooter>
         </form>
       </Form>
-      {!isConnected && (
+      {showConnectMessage && (
         <p className="text-center text-sm text-muted-foreground pb-4">Please connect your wallet to send help.</p>
       )}
     </Card>
