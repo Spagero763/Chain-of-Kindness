@@ -81,7 +81,7 @@
           }
         ],
         "internalType": "struct ProofOfHelp.HelpRecord[]",
-        "name": "",
+        "name": "records",
         "type": "tuple[]"
       }
     ],
