@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { useAccount, useContractWrite, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, useWriteContract, useWaitForTransaction } from 'wagmi';
 import { isAddress } from 'viem';
 import abi from '../abi.json';
 import { Button } from '@/components/ui/button';
@@ -42,9 +42,9 @@ export default function GiveHelpForm() {
     },
   });
 
-  const { data: hash, writeContract, isPending, error } = useContractWrite();
+  const { data: hash, writeContract, isPending, error } = useWriteContract();
 
-  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ 
+  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransaction({ 
     hash, 
   });
 

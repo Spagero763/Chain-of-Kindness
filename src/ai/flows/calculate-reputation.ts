@@ -3,9 +3,8 @@
 /**
  * @fileOverview AI-powered reputation leaderboard for top helpers.
  *
- * - calculateReputation - A function that calculates the reputation scores of helpers and returns a leaderboard.
- * - CalculateReputationInput - The input type for the calculateReputation function (currently empty).
- * - CalculateReputationOutput - The return type for the calculateReputation function.
+ * This file is no longer used by the application but is kept for reference.
+ * The leaderboard now fetches reputation data directly from the smart contract.
  */
 
 import {ai} from '@/ai/genkit';
@@ -62,8 +61,9 @@ const calculateReputationFlow = ai.defineFlow(
     outputSchema: CalculateReputationOutputSchema,
   },
   async input => {
-    // Fetch help records from the blockchain (replace with actual data retrieval)
-    // For now, using mock data
+    // This flow is no longer directly used by the UI.
+    // The leaderboard now fetches reputation from the smart contract.
+    // Keeping the logic here for potential future use or reference.
     const helpRecords = [
       { helper: '0x123', recipient: '0x456', message: 'Provided guidance on smart contract deployment.' },
       { helper: '0x789', recipient: '0xabc', message: 'Assisted with debugging a critical bug.' },
@@ -71,12 +71,10 @@ const calculateReputationFlow = ai.defineFlow(
       { helper: '0x456', recipient: '0x789', message: 'Explained gas optimization techniques.' },
     ];
 
-    // Call the reputation prompt to calculate reputation scores
     const {output} = await reputationPrompt({
       helpRecords: helpRecords,
     });
 
-    // Return the leaderboard
     return output!;
   }
 );

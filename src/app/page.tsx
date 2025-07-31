@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import { ConnectButton } from '@/components/ConnectButton';
 import GiveHelpForm from '@/components/GiveHelpForm';
 import HelpBoard from '@/components/HelpBoard';
-import { Leaderboard } from '@/components/Leaderboard';
+import Leaderboard from '@/components/Leaderboard';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Home() {
