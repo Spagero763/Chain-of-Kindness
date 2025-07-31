@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { useAccount, useWriteContract, useWaitForTransaction } from 'wagmi';
+import { useAccount, useContractWrite, useWaitForTransaction } from 'wagmi';
 import { isAddress } from 'viem';
 import abi from '../abi.json';
 import { Button } from '@/components/ui/button';
@@ -42,17 +42,18 @@ export default function GiveHelpForm() {
     },
   });
 
-  const { data: hash, writeContract, isPending, error } = useWriteContract();
+  const { data: hash, write: giveHelp, isLoading: isPending, error } = useContractWrite({
+    address: contractAddress,
+    abi,
+    functionName: 'giveHelp',
+  });
 
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransaction({ 
     hash, 
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    writeContract({
-      address: contractAddress,
-      abi,
-      functionName: 'giveHelp',
+    giveHelp({
       args: [values.recipient, values.message],
     });
   }
